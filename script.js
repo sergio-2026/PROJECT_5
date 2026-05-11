@@ -63,20 +63,18 @@ function initMap() {
   questionTotalSpan.innerHTML = "5";
 
   // The midpoint of the campus bounds -- this is where the map starts
-  var campusCenter = { lat: 34.239, lng: -118.5280 };
+  var campusCenter = { lat: 34.2383, lng: -118.5280 };
 
   // These are the four edges of the area the map is allowed to show.
   // The user cannot scroll or pan outside this box.
   var campusBounds = {
-    north: 34.2450,
+    north: 34.2430,
     south: 34.2330,
     east:  -118.5240,
     west:  -118.5360
   };
 
   // This styles array turns off every text label on the map.
-  // I do this so the building names are not visible -- otherwise
-  // the quiz would be too easy since the labels give away the answers.
   var cleanStyle = [
     { featureType: "all",            elementType: "labels", stylers: [{ visibility: "off" }] },
     { featureType: "road",           elementType: "labels", stylers: [{ visibility: "off" }] },
@@ -90,14 +88,14 @@ function initMap() {
   // Create the actual Google Map inside the #map div
   map = new google.maps.Map(mapDiv, {
     center: campusCenter,
-    zoom: 16,
+    zoom: 17.5,
 
     // restriction locks the viewport to the campus area.
     // strictBounds: true means the map edges cannot go past campusBounds.
-    restriction: {
-      latLngBounds: campusBounds,
-      strictBounds: true
-    },
+   //restriction: {
+    //  latLngBounds: campusBounds,
+    //  strictBounds: true
+    //},
 
     // Requirement 1.6: All interaction controls are turned off.
     // The user should only interact with the map by double clicking.

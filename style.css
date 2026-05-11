@@ -110,7 +110,7 @@ body {
 /* Right column map container */
 #map {
   flex: 1;
-  height: 100vh;
+  height: 100vh; 
 }
 
 /* EXTRA FEATURE 2.1: simple flash animation on the map when you answer.
