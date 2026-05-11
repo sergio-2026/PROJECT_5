@@ -132,3 +132,117 @@ body {
 .map-flash-wrong {
   animation: flashRed 0.5s ease-out;
 }
+
+/* Make the sidebar look more like a card */
+#sidebar {
+  width: 320px;
+  padding: 16px 18px;
+  box-sizing: border-box;
+  background: linear-gradient(#e9ddc3, #d6c29c);
+  border-right: 3px solid #b39361;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+#sidebar h1 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 24px;
+  letter-spacing: 1px;
+  color: #3b2b18;
+  border-bottom: 2px solid #c3a06a;
+  padding-bottom: 6px;
+}
+
+#instructions {
+  font-size: 14px;
+  line-height: 1.4;
+  background-color: #f8f2e4;
+  border-left: 4px solid #c49a5c;
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+#score-box {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background-color: #f2e3c9;
+  border: 1px solid #c5b393;
+  border-radius: 4px;
+}
+
+#score-box p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+#question-list {
+  font-size: 14px;
+  padding-left: 22px;
+  margin-top: 10px;
+}
+
+#question-list li {
+  margin-bottom: 4px;
+}
+
+/* Existing classes, just slightly refined colors */
+#question-list li.current-question {
+  font-weight: bold;
+  color: #204b6f;
+}
+
+#question-list li.answered-correct {
+  color: #1d6b1d;
+}
+
+#question-list li.answered-wrong {
+  color: #a13030;
+}
+
+#status-bar {
+  margin-top: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  min-height: 40px;
+  border: 1px solid #c0b7aa;
+}
+
+/* Keep your existing background colors, just reusing them */
+.status-neutral {
+  background-color: #ddd;
+  color: #222;
+}
+
+.status-correct {
+  background-color: #7ac27a;
+  color: #102010;
+}
+
+.status-wrong {
+  background-color: #e48282;
+  color: #2a0000;
+}
+
+#reset-button {
+  margin-top: 12px;
+  padding: 6px 14px;
+  font-size: 14px;
+  background-color: #ffffff;
+  border: 1px solid #a68755;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#reset-button:hover {
+  background-color: #f5ead8;
+}
+
+/* Legend separated a bit from the rest */
+#legend {
+  margin-top: 14px;
+  padding-top: 8px;
+  font-size: 13px;
+  border-top: 1px dashed #b8a57f;
+}
