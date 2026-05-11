@@ -7,32 +7,20 @@
    It follows the COMP 484 style from lecture slides.
 --------------------------------------------------------- */
 
+
 /* =========================================================
    GLOBAL VARIABLES
    ========================================================= */
 
-// Google map object (we fill it in inside initMap)
 var map;
-
-// Array that will hold our 5 quiz locations.
-// Each item is a simple object with a name and LatLngBounds.
 var quizLocations = [];
-
-// Index of the current location we are asking about (0 to 4)
 var currentIndex = 0;
-
-// How many answers were correct so far
 var correctCount = 0;
-
-// Keep all rectangle objects here so they stay on the map
 var allRectangles = [];
-
-// Simple timer values (extra feature)
 var timerInterval = null;
 var elapsedSeconds = 0;
 var gameStarted = false;
 
-// Quick references to DOM elements (so we do not search every time)
 var questionNumberSpan;
 var questionTotalSpan;
 var correctCountSpan;
@@ -42,20 +30,12 @@ var questionListItems;
 var mapDiv;
 var resetButton;
 
+
 /* =========================================================
-   REQUIREMENT 1.1, 1.2, 1.6:
-   - Show CSUN map.
-   - User double clicks the map to guess a location.
-   - Panning and zooming are turned off.
-   - We also use two UNIQUE Google Maps features for the
-     presentation:
-       (A) Map 'dblclick' event.
-       (B) LatLngBounds class for hit‑testing the rectangles.
+   REQUIREMENT 1.1, 1.2, 1.6
    ========================================================= */
 
-// This function will be called by Google Maps when the script file loads
 function initMap() {
-  // Grab HTML elements now that the page has loaded
   questionNumberSpan = document.getElementById("question-number");
   questionTotalSpan  = document.getElementById("question-total");
   correctCountSpan   = document.getElementById("correct-count");
@@ -65,20 +45,42 @@ function initMap() {
   resetButton        = document.getElementById("reset-button");
   questionListItems  = document.querySelectorAll("#question-list li");
 
-  // We have 5 questions total (4 of ours + 1 instructor location)
   questionTotalSpan.innerHTML = "5";
 
-  // ---- Set up Google map itself ----
-  // Center is set near the middle of CSUN campus.
-  // NOTE: These coordinates are general campus center.
-  var campusCenter = { lat: 34.2385, lng: -118.5283 };
+  // Center is the midpoint of the locked bounds
+  var campusCenter = { lat: 34.23828, lng: -118.52954 };
+
+  // The locked boundary the map cannot leave
+  var campusBounds = {
+    north: 34.240971249792935,
+    south: 34.23559711347527,
+    east:  -118.52734390838299,
+    west:  -118.53174335248659
+  };
+
+  // Map style: removes all road names, POI labels, business names,
+  // transit icons so only the clean satellite/roadmap geometry shows.
+  var cleanStyle = [
+    { featureType: "all",     elementType: "labels",            stylers: [{ visibility: "off" }] },
+    { featureType: "road",    elementType: "labels",            stylers: [{ visibility: "off" }] },
+    { featureType: "poi",     elementType: "labels",            stylers: [{ visibility: "off" }] },
+    { featureType: "transit", elementType: "labels",            stylers: [{ visibility: "off" }] },
+    { featureType: "administrative", elementType: "labels",     stylers: [{ visibility: "off" }] },
+    { featureType: "landscape",      elementType: "labels",     stylers: [{ visibility: "off" }] },
+    { featureType: "water",          elementType: "labels",     stylers: [{ visibility: "off" }] }
+  ];
 
   map = new google.maps.Map(mapDiv, {
     center: campusCenter,
-    zoom: 16,
+    zoom: 17,
 
-    // REQUIREMENT 1.6:
-    // Turn off panning and zooming.
+    // Lock map inside the campus bounds — user cannot pan outside
+    restriction: {
+      latLngBounds: campusBounds,
+      strictBounds: true
+    },
+
+    // REQUIREMENT 1.6: Turn off panning and zooming
     draggable: false,
     scrollwheel: false,
     disableDoubleClickZoom: true,
@@ -86,132 +88,110 @@ function initMap() {
     zoomControl: false,
     streetViewControl: false,
     mapTypeControl: false,
-    fullscreenControl: false
+    fullscreenControl: false,
+
+    // Apply the clean no-label style
+    styles: cleanStyle
   });
 
-  // REQUIREMENT 1.2 and EXTRA FEATURE A:
-  // Use the Google Maps 'dblclick' event on the Map object.
-  // User will double click where they think the building is.
   map.addListener("dblclick", handleMapDoubleClick);
 
-  // Build the location data and LatLngBounds objects.
   buildQuizLocations();
-
-  // Highlight first question in the list.
   updateQuestionListHighlight();
-
-  // Wire the reset button
   resetButton.addEventListener("click", resetGame);
 }
 
+
 /* =========================================================
    BUILD QUIZ LOCATION DATA
-   ---------------------------------------------------------
-   REQUIREMENT 1.3, 1.4, 1.5:
-   We keep the data for each building in an array of objects.
-   Each object has:
-     - name        : building name
-     - question    : question text
-     - bounds      : google.maps.LatLngBounds rectangle
-   The bounds are used both for green/red rectangles and for
-   checking if the double click was inside or outside.
-   This is where we use UNIQUE FEATURE (B) LatLngBounds.
    ========================================================= */
 
 function buildQuizLocations() {
-  // NOTE:
-  // The latitude / longitude numbers below are ESTIMATES.
-  // They may not line up perfectly with each building.
-  // Use the step‑by‑step guide at the end of this file’s comments
-  // to fine‑tune them in your own project.
 
-  // Helper function to create LatLngBounds in a simple way
   function makeBounds(swLat, swLng, neLat, neLng) {
-    // LatLngBounds takes a south‑west corner and a north‑east corner.
     return new google.maps.LatLngBounds(
       { lat: swLat, lng: swLng },
       { lat: neLat, lng: neLng }
     );
   }
 
-  // 0. Instructor location for Sergio:
-  //    Sequoia Hall — grid E4 on the campus map.
+  // 0. Instructor location: Sequoia Hall
   quizLocations.push({
     name: "Sequoia Hall",
     question: "Where is Sequoia Hall?",
-    bounds: makeBounds(34.2379, -118.5265, 34.2393, -118.5247)
+    bounds: makeBounds(
+      34.2401272880422,  -118.52844705192415,
+      34.24079600506163, -118.52762709326564
+    )
   });
 
-  // 1. Our own choice: University Library
+  // 1. University Library
   quizLocations.push({
     name: "University Library",
     question: "Where is the University Library?",
-    bounds: makeBounds(34.2382, -118.5300, 34.2393, -118.5288)
+    bounds: makeBounds(
+      34.239509413156675, -118.53003414074551,
+      34.2403937110296,   -118.5285623728782
+    )
   });
 
-  // 2. Our own choice: Sierra Tower
+  // 2. Sierra Tower
   quizLocations.push({
     name: "Sierra Tower",
     question: "Where is Sierra Tower?",
-    bounds: makeBounds(34.2402, -118.5310, 34.2410, -118.5299)
+    bounds: makeBounds(
+      34.23845145562707,  -118.53034703930294,
+      34.23910406164635,  -118.53009668326304
+    )
   });
 
-  // 3. Our own choice: Student Recreation Center
+  // 3. Student Recreation Center
   quizLocations.push({
     name: "Student Recreation Center",
     question: "Where is the Student Recreation Center?",
-    bounds: makeBounds(34.2378, -118.5226, 34.2390, -118.5214)
+    bounds: makeBounds(
+      34.239319395387106, -118.52518628700064,
+      34.24061112895547,  -118.52469615064189
+    )
   });
 
-  // 4. Our own choice: The Soraya (Performing Arts Center)
+  // 4. The Soraya (Performing Arts Center)
   quizLocations.push({
     name: "The Soraya",
     question: "Where is The Soraya?",
-    // This one is close to published coordinate 34.235690, -118.529141 [cite:285]
-    bounds: makeBounds(34.2350, -118.5300, 34.2362, -118.5285)
+    bounds: makeBounds(
+      34.23577653148262, -118.52877358762456,
+      34.23667349045248, -118.52747304895206
+    )
   });
 }
 
+
 /* =========================================================
    HANDLE USER DOUBLE CLICK
-   ---------------------------------------------------------
-   This runs every time user double clicks on the Google map.
-   - REQUIREMENT 1.1: user is prompted to double click.
-   - REQUIREMENT 1.2: we read where they clicked.
-   - REQUIREMENT 1.3, 1.4: show green/red rectangle and message.
-   - REQUIREMENT 1.5: after 5 questions, show total results.
    ========================================================= */
 
 function handleMapDoubleClick(event) {
-  // Start timer on very first map double click (extra feature).
   if (!gameStarted) {
     startTimer();
     gameStarted = true;
   }
 
-  // If game is already finished, ignore extra clicks.
   if (currentIndex >= quizLocations.length) {
     return;
   }
 
-  var clickLatLng = event.latLng; // LatLng object of where user double clicked
+  var clickLatLng = event.latLng;
   var currentLocation = quizLocations[currentIndex];
-
-  // UNIQUE FEATURE (B) LatLngBounds:
-  // Check if the clicked point is inside the rectangle
   var isInside = currentLocation.bounds.contains(clickLatLng);
 
-  // Draw the rectangle in green or red
   drawResultRectangle(currentLocation.bounds, isInside);
 
-  // Update text feedback and score.
   if (isInside) {
     correctCount++;
     correctCountSpan.innerHTML = correctCount;
     setStatusCorrect("Nice job! You found " + currentLocation.name + ".");
     markQuestionListItem("answered-correct");
-
-    // Extra simple animation on map when correct
     flashMap("map-flash-correct");
   } else {
     setStatusWrong("Sorry, that was not " + currentLocation.name + ". The red box shows the correct area.");
@@ -219,22 +199,19 @@ function handleMapDoubleClick(event) {
     flashMap("map-flash-wrong");
   }
 
-  // Move to next question
   currentIndex++;
 
   if (currentIndex < quizLocations.length) {
     questionNumberSpan.innerHTML = (currentIndex + 1);
     updateQuestionListHighlight();
   } else {
-    // REQUIREMENT 1.5: after five locations, show total correct.
     endGame();
   }
 }
 
+
 /* =========================================================
    DRAW RECTANGLE ON MAP
-   ---------------------------------------------------------
-   We reuse this for both green and red rectangles.
    ========================================================= */
 
 function drawResultRectangle(bounds, isCorrect) {
@@ -242,10 +219,10 @@ function drawResultRectangle(bounds, isCorrect) {
   var fillColor;
 
   if (isCorrect) {
-    strokeColor = "#008000"; // green
+    strokeColor = "#008000";
     fillColor = "rgba(0, 255, 0, 0.5)";
   } else {
-    strokeColor = "#cc0000"; // red
+    strokeColor = "#cc0000";
     fillColor = "rgba(255, 0, 0, 0.5)";
   }
 
@@ -260,6 +237,7 @@ function drawResultRectangle(bounds, isCorrect) {
 
   allRectangles.push(rect);
 }
+
 
 /* =========================================================
    STATUS BAR HELPERS
@@ -280,17 +258,16 @@ function setStatusWrong(message) {
   statusBarDiv.innerHTML = message;
 }
 
+
 /* =========================================================
    QUESTION LIST HIGHLIGHTING
    ========================================================= */
 
 function updateQuestionListHighlight() {
   var i;
-
   for (i = 0; i < questionListItems.length; i++) {
     questionListItems[i].classList.remove("current-question");
   }
-
   if (currentIndex < questionListItems.length) {
     questionListItems[currentIndex].classList.add("current-question");
   }
@@ -303,26 +280,21 @@ function markQuestionListItem(className) {
   }
 }
 
+
 /* =========================================================
-   TIMER (EXTRA FEATURE 2.2 FROM HANDOUT)
-   ---------------------------------------------------------
-   Simple seconds timer that starts with the first guess
-   and stops when the game ends.
+   TIMER (EXTRA FEATURE)
    ========================================================= */
 
 function startTimer() {
-  // Do not start if already running
   if (timerInterval !== null) {
     return;
   }
-
   elapsedSeconds = 0;
   updateTimerDisplay();
-
   timerInterval = setInterval(function() {
     elapsedSeconds++;
     updateTimerDisplay();
-  }, 1000); // run every 1 second
+  }, 1000);
 }
 
 function stopTimer() {
@@ -335,30 +307,23 @@ function stopTimer() {
 function updateTimerDisplay() {
   var minutes = Math.floor(elapsedSeconds / 60);
   var seconds = elapsedSeconds % 60;
-
-  // Simple leading zero formatter like in your typing test
   var mm = minutes < 10 ? "0" + minutes : "" + minutes;
   var ss = seconds < 10 ? "0" + seconds : "" + seconds;
-
   timerSpan.innerHTML = mm + ":" + ss;
 }
 
+
 /* =========================================================
-   SIMPLE MAP FLASH ANIMATION
-   ---------------------------------------------------------
-   Adds a CSS class for half a second to show a soft pulse.
+   MAP FLASH ANIMATION
    ========================================================= */
 
 function flashMap(className) {
-  // Remove old classes first
   mapDiv.classList.remove("map-flash-correct");
   mapDiv.classList.remove("map-flash-wrong");
-
-  // Force browser to reflow so animation can restart
   void mapDiv.offsetWidth;
-
   mapDiv.classList.add(className);
 }
+
 
 /* =========================================================
    END GAME SUMMARY (REQUIREMENT 1.5)
@@ -366,22 +331,19 @@ function flashMap(className) {
 
 function endGame() {
   stopTimer();
-
   var wrong = quizLocations.length - correctCount;
   var message = correctCount + " correct, " + wrong + " incorrect in " + timerSpan.innerHTML + ".";
-
-  setStatusNeutral(message + " Double click Start Over to play again.");
+  setStatusNeutral(message + " Click Start Over to play again.");
 }
+
 
 /* =========================================================
    RESET GAME STATE
-   ---------------------------------------------------------
-   Clears rectangles, scores, timer, and question list.
    ========================================================= */
 
 function resetGame() {
-  // Remove rectangles from the map
   var i;
+
   for (i = 0; i < allRectangles.length; i++) {
     allRectangles[i].setMap(null);
   }
@@ -392,13 +354,11 @@ function resetGame() {
   correctCountSpan.innerHTML = "0";
   questionNumberSpan.innerHTML = "1";
 
-  // Reset question list colors
   for (i = 0; i < questionListItems.length; i++) {
     questionListItems[i].className = "";
   }
   updateQuestionListHighlight();
 
-  // Reset status bar and timer
   setStatusNeutral("Game reset. Double click on the map to guess the first location.");
   stopTimer();
   elapsedSeconds = 0;
