@@ -63,15 +63,15 @@ function initMap() {
   questionTotalSpan.innerHTML = "5";
 
   // The midpoint of the campus bounds -- this is where the map starts
-  var campusCenter = { lat: 34.23828, lng: -118.52954 };
+  var campusCenter = { lat: 34.239, lng: -118.5280 };
 
   // These are the four edges of the area the map is allowed to show.
   // The user cannot scroll or pan outside this box.
   var campusBounds = {
-    north: 34.240971249792935,
-    south: 34.23559711347527,
-    east:  -118.52734390838299,
-    west:  -118.53174335248659
+    north: 34.2450,
+    south: 34.2330,
+    east:  -118.5240,
+    west:  -118.5360
   };
 
   // This styles array turns off every text label on the map.
@@ -90,7 +90,7 @@ function initMap() {
   // Create the actual Google Map inside the #map div
   map = new google.maps.Map(mapDiv, {
     center: campusCenter,
-    zoom: 15,
+    zoom: 16,
 
     // restriction locks the viewport to the campus area.
     // strictBounds: true means the map edges cannot go past campusBounds.
