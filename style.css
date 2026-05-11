@@ -1,0 +1,134 @@
+/* Basic page layout: sidebar on the left, map on the right */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f1e6; /* soft tan like sample screenshot */
+}
+
+#page-wrapper {
+  display: flex;
+  height: 100vh; /* full browser height */
+}
+
+/* Left column */
+#sidebar {
+  width: 320px;
+  padding: 12px;
+  box-sizing: border-box;
+  background-color: #e0d2b8;
+  border-right: 2px solid #b8a57f;
+}
+
+#sidebar h1 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+#instructions {
+  font-size: 14px;
+}
+
+/* Score area */
+#score-box p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* Question list */
+#question-list {
+  font-size: 14px;
+  padding-left: 18px;
+}
+
+#question-list li.current-question {
+  font-weight: bold;
+  color: #003366;
+}
+
+#question-list li.answered-correct {
+  color: #006600;
+}
+
+#question-list li.answered-wrong {
+  color: #990000;
+}
+
+/* Status bar that shows text feedback */
+#status-bar {
+  margin-top: 12px;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  min-height: 36px;
+  transition: background-color 0.3s ease;
+}
+
+.status-neutral {
+  background-color: #ddd;
+  color: #222;
+}
+
+.status-correct {
+  background-color: #7ac27a;
+  color: #102010;
+}
+
+.status-wrong {
+  background-color: #e48282;
+  color: #2a0000;
+}
+
+/* Extra small legend boxes */
+#legend {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.box {
+  display: inline-block;
+  width: 16px;
+  height: 12px;
+  margin-right: 4px;
+  border: 1px solid #333;
+}
+
+.green-box {
+  background-color: rgba(0, 200, 0, 0.4);
+}
+
+.red-box {
+  background-color: rgba(200, 0, 0, 0.4);
+}
+
+/* Reset button */
+#reset-button {
+  margin-top: 10px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+/* Right column map container */
+#map {
+  flex: 1;
+  height: 100vh;
+}
+
+/* EXTRA FEATURE 2.1: simple flash animation on the map when you answer.
+   Used when answer is correct or wrong. */
+@keyframes flashGreen {
+  0%   { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.8); }
+  100% { box-shadow: 0 0 0 30px rgba(0, 255, 0, 0); }
+}
+
+@keyframes flashRed {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.8); }
+  100% { box-shadow: 0 0 0 30px rgba(255, 0, 0, 0); }
+}
+
+.map-flash-correct {
+  animation: flashGreen 0.5s ease-out;
+}
+
+.map-flash-wrong {
+  animation: flashRed 0.5s ease-out;
+}

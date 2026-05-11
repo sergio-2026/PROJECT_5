@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSUN Map Quiz - Sergio Ruelas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="page-wrapper">
+    <!-- Left side: game text and results -->
+    <div id="sidebar">
+      <h1>CSUN Map Quiz</h1>
+
+      <p id="instructions">
+        Double click on the map where you think each building is.  
+        You will answer 5 questions. No panning or zooming.
+      </p>
+
+      <!-- REQUIREMENT 1.5: after five locations show total correct -->
+      <div id="score-box">
+        <p><strong>Question:</strong> <span id="question-number">1</span> / <span id="question-total">5</span></p>
+        <p><strong>Correct so far:</strong> <span id="correct-count">0</span></p>
+        <!-- EXTRA FEATURE: timer (example 2.2 from handout) -->
+        <p><strong>Time:</strong> <span id="timer">00:00</span></p>
+      </div>
+
+      <!-- List of questions so student can see the order -->
+      <ol id="question-list">
+        <li id="q0">Where is Sequoia Hall?</li>
+        <li id="q1">Where is the University Library?</li>
+        <li id="q2">Where is Sierra Tower?</li>
+        <li id="q3">Where is the Student Recreation Center?</li>
+        <li id="q4">Where is The Soraya?</li>
+      </ol>
+
+      <!-- Status message area for correct / wrong feedback -->
+      <div id="status-bar" class="status-neutral">
+        Double click on the map to guess the first location.
+      </div>
+
+      <!-- Simple reset button so you can play again without refresh -->
+      <button id="reset-button" type="button">Start Over</button>
+
+      <!-- Small legend so grader knows what colors mean -->
+      <div id="legend">
+        <p><span class="box green-box"></span> Correct area</p>
+        <p><span class="box red-box"></span> Correct area when you were wrong</p>
+      </div>
+    </div>
+
+    <!-- Right side: Google map -->
+    <div id="map"></div>
+  </div>
+
+  <!-- Your own script -->
+  <script src="script.js"></script>
+
+  <!--
+    GOOGLE MAPS SCRIPT TAG
+    IMPORTANT:
+    1. Replace YOUR_API_KEY_HERE with your real key.
+    2. Keep callback=initMap so Google calls your function when map is ready.
+  -->
+  <script
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&callback=initMap">
+  </script>
+</body>
+</html>
